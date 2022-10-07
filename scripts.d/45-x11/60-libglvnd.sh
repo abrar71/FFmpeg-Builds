@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/glvnd/libglvnd.git"
-SCRIPT_COMMIT="5e289fbceca18bf2145c121814a690b1a1fa276c"
+SCRIPT_COMMIT="9215f347d2dce08916f250b7b57f7b26315a8fa7"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1

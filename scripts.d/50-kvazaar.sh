@@ -1,30 +1,23 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://code.videolan.org/videolan/libbluray.git"
-SCRIPT_COMMIT="5539addbbf8c26d756fc2cb76b3919f8b73be66a"
+SCRIPT_REPO="https://github.com/ultravideo/kvazaar.git"
+SCRIPT_COMMIT="a085e802ec6d24319160fec32c4027122e73580f"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" libbluray
-    cd libbluray
+    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" kvazaar
+    cd kvazaar
 
-    ./bootstrap
+    ./autogen.sh
 
     local myconf=(
         --prefix="$FFBUILD_PREFIX"
         --disable-shared
         --enable-static
         --with-pic
-        --disable-doxygen-doc
-        --disable-doxygen-dot
-        --disable-doxygen-html
-        --disable-doxygen-ps
-        --disable-doxygen-pdf
-        --disable-examples
-        --disable-bdjava-jar
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then
@@ -39,12 +32,14 @@ ffbuild_dockerbuild() {
     ./configure "${myconf[@]}"
     make -j$(nproc)
     make install
+
+    echo "Cflags.private: -DKVZ_STATIC_LIB" >> "$FFBUILD_PREFIX"/lib/pkgconfig/kvazaar.pc
 }
 
 ffbuild_configure() {
-    echo --enable-libbluray
+    echo --enable-libkvazaar
 }
 
 ffbuild_unconfigure() {
-    echo --disable-libbluray
+    echo --disable-libkvazaar
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.freedesktop.org/mesa/drm.git"
-SCRIPT_COMMIT="98794e2a0d537f3376970918bf955361191720c7"
+SCRIPT_COMMIT="0bd3e4e94f8270e64c7fd1e361a71da4a1547b1b"
 
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
@@ -18,16 +18,16 @@ ffbuild_dockerbuild() {
         --prefix="$FFBUILD_PREFIX"
         -Ddefault_library=shared
         -Dudev=false
-        -Dcairo-tests=false
-        -Dvalgrind=false
-        -Dexynos=false
-        -Dfreedreno=false
-        -Domap=false
-        -Detnaviv=false
-        -Dintel=true
-        -Dnouveau=true
-        -Dradeon=true
-        -Damdgpu=true
+        -Dcairo-tests=disabled
+        -Dvalgrind=disabled
+        -Dexynos=disabled
+        -Dfreedreno=disabled
+        -Domap=disabled
+        -Detnaviv=disabled
+        -Dintel=enabled
+        -Dnouveau=enabled
+        -Dradeon=enabled
+        -Damdgpu=enabled
     )
 
     if [[ $TARGET == linux* ]]; then
