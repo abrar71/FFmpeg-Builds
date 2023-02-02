@@ -1,15 +1,15 @@
 #!/bin/bash
 
-SCRIPT_REPO="https://github.com/lv2/lv2.git"
-SCRIPT_COMMIT="9dc04ad3c5b62d0018eae14dc177be2993dbcbd4"
+SCRIPT_REPO="https://github.com/drobilla/zix.git"
+SCRIPT_COMMIT="56ec14c4369c591f5efbb500b0829b760bee7800"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" lv2
-    cd lv2
+    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" zix
+    cd zix
 
     mkdir build && cd build
 
@@ -18,9 +18,9 @@ ffbuild_dockerbuild() {
         --buildtype=release
         --default-library=static
         -Ddocs=disabled
-        -Dplugins=disabled
+        -Dbenchmarks=disabled
         -Dtests=disabled
-        -Donline_docs=false
+        -Dtests_cpp=disabled
     )
 
     if [[ $TARGET == win* || $TARGET == linux* ]]; then

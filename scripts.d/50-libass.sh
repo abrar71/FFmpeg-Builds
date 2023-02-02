@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/libass/libass.git"
-SCRIPT_COMMIT="44f6532daf5eb13cb1aa95f5449a77b5df1dd85b"
+SCRIPT_COMMIT="062d4ec598b4fd06f75c0cd6a0f43f5d0939a764"
 
 ffbuild_enabled() {
     return 0
@@ -28,6 +28,8 @@ ffbuild_dockerbuild() {
         echo "Unknown target"
         return -1
     fi
+
+    export CFLAGS="$CFLAGS -Dread_file=libass_internal_read_file"
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
