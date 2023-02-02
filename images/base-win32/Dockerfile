@@ -1,4 +1,4 @@
-ARG GH_REPO=ghcr.abrar71/btbn/ffmpeg-builds
+ARG GH_REPO=ghcr.io/abrar71/ffmpeg-builds
 FROM $GH_REPO/base:latest
 
 RUN --mount=src=ct-ng-config,dst=/.config \
