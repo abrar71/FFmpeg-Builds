@@ -100,7 +100,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,linux64,linuxarm64]
-        variant: [nonfree 5.1,nonfree-shared 5.1 nonfree 4.4,nonfree-shared 4.4]
+        variant: [nonfree 5.1,nonfree-shared 5.1,nonfree 4.4,nonfree-shared 4.4]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -144,7 +144,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,linux64,linuxarm64]
-        variant: [nonfree 5.1,nonfree-shared 5.1 nonfree 4.4,nonfree-shared 4.4]
+        variant: [nonfree 5.1,nonfree-shared 5.1,nonfree 4.4,nonfree-shared 4.4]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
