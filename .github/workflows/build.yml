@@ -78,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [win64,linux64,linuxarm64]
+        target: [linux64]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
