@@ -1,18 +1,20 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/google/shaderc.git"
-SCRIPT_COMMIT="4a8f5e537f20bbcfe4b11f1fe45314f1dcbfddf6"
+SCRIPT_COMMIT="4dc596ddc2702092c670e828745dc3e0338d83c1"
 
 ffbuild_enabled() {
     [[ $ADDINS_STR == *4.4* ]] && return -1
     return 0
 }
 
-ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" shaderc
-    cd shaderc
+ffbuild_dockerdl() {
+    default_dl "$SELF"
+    to_df "RUN cd \"$SELF\" && ./utils/git-sync-deps"
+}
 
-    ./utils/git-sync-deps
+ffbuild_dockerbuild() {
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 

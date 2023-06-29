@@ -1,15 +1,14 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://git.libssh.org/projects/libssh.git"
-SCRIPT_COMMIT="c3aa0cb18225f2f9fcefd96aad327c6ffbb2d77c"
+SCRIPT_COMMIT="df0a445c87dc9678f23984141f6b396c72888972"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" libssh
-    cd libssh
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 

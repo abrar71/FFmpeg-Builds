@@ -1,15 +1,14 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/lv2/lilv.git"
-SCRIPT_COMMIT="efb392e32da0bce28dbeb6fb728dcd9183f4611b"
+SCRIPT_COMMIT="caad4f5554fd77b61a0907a67bab90bc656d86ad"
 
 ffbuild_enabled() {
     return 0
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" lilv
-    cd lilv
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 

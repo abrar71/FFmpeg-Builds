@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/AviSynth/AviSynthPlus.git"
-SCRIPT_COMMIT="35706f838a7f6bdda422891c875e60d503d9bdb4"
+SCRIPT_COMMIT="ad0d546cd2fd5eadf3b4d29df24bf3f6713d9707"
 
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
@@ -9,8 +9,7 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerbuild() {
-    git-mini-clone "$SCRIPT_REPO" "$SCRIPT_COMMIT" avisynth
-    cd avisynth
+    cd "$FFBUILD_DLDIR/$SELF"
 
     mkdir build && cd build
 
