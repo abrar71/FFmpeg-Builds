@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://gitlab.com/AOMediaCodec/SVT-AV1.git"
-SCRIPT_COMMIT="08c18ba0768ed3dbbff0903adc326fb3a7549bd9"
+SCRIPT_COMMIT="a6f0981c2b82aea05205b96bfebb1e6cd53790de"
 
 ffbuild_enabled() {
     [[ $TARGET == win32 ]] && return -1
@@ -9,8 +9,7 @@ ffbuild_enabled() {
 }
 
 ffbuild_dockerdl() {
-    to_df "RUN git clone \"$SCRIPT_REPO\" \"$SELF\""
-    to_df "RUN git -C \"$SELF\" checkout \"$SCRIPT_COMMIT\""
+    to_df "RUN git clone \"$SCRIPT_REPO\" \"$SELF\" && git -C \"$SELF\" checkout \"$SCRIPT_COMMIT\""
 }
 
 ffbuild_dockerbuild() {
