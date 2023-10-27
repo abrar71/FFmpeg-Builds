@@ -10,7 +10,7 @@ on:
       doRelease:
         description: 'Publish new release'
         type: boolean
-        default: false
+        default: true
         required: false
       buildOnly:
         description: 'Only build ffmpeg'
@@ -18,7 +18,7 @@ on:
         default: false
         required: false
   schedule:
-    - cron: '0 13 * * *'
+    - cron: '0 01 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
