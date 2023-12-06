@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/Netflix/vmaf.git"
-SCRIPT_COMMIT="af31e4cd8059dbd9b8a51c5752096c2585be7792"
+SCRIPT_COMMIT="97e50eae7e07cfce56b4510fb1e50d4289f5340a"
 
 ffbuild_enabled() {
     return 0
@@ -43,6 +43,7 @@ ffbuild_dockerbuild() {
 }
 
 ffbuild_configure() {
+    [[ $ADDINS_STR == *4.4* ]] && return 0
     echo --enable-libvmaf
 }
 
