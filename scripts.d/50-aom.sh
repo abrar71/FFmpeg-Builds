@@ -1,9 +1,10 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://aomedia.googlesource.com/aom"
-SCRIPT_COMMIT="8e0b26f4e830cfe39541195352119c6f86459f5e"
+SCRIPT_COMMIT="158761dfb40e77f3a54c3b14a596112837baa24b"
 
 ffbuild_enabled() {
+    [[ $TARGET == winarm64 ]] && return -1
     return 0
 }
 
