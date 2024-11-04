@@ -10,7 +10,7 @@ on:
       doRelease:
         description: 'Publish new release'
         type: boolean
-        default: false
+        default: true
         required: false
       buildOnly:
         description: 'Only build ffmpeg'
@@ -18,7 +18,7 @@ on:
         default: false
         required: false
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '0 10 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
@@ -31,12 +31,12 @@ jobs:
     steps:
       - name: Repo Check
         run: |
-          if [[ "$GITHUB_REPOSITORY" != "BtbN/FFmpeg-Builds" ]]; then
-            echo "When forking this repository to make your own builds, you have to adjust this check."
-            echo "When doing so make sure to randomize the scheduled cron time above, in order to spread out the various build times as much as possible."
-            echo "This has been put in place due to the enormous amounts of traffic hundreds/thousands of parallel builds can cause on external infrastructure."
-            exit 1
-          fi
+          # if [[ "$GITHUB_REPOSITORY" != "BtbN/FFmpeg-Builds" ]]; then
+          #   echo "When forking this repository to make your own builds, you have to adjust this check."
+          #   echo "When doing so make sure to randomize the scheduled cron time above, in order to spread out the various build times as much as possible."
+          #   echo "This has been put in place due to the enormous amounts of traffic hundreds/thousands of parallel builds can cause on external infrastructure."
+          #   exit 1
+          # fi
           exit 0
   build_base:
     name: Build base image
@@ -166,7 +166,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 5.1,gpl 6.1,gpl 7.1,lgpl 5.1,lgpl 6.1,lgpl 7.1,gpl-shared,lgpl-shared,gpl-shared 5.1,gpl-shared 6.1,gpl-shared 7.1,lgpl-shared 5.1,lgpl-shared 6.1,lgpl-shared 7.1]
+        variant: [gpl,lgpl,gpl 5.1,gpl 6.1,gpl 7.1,lgpl 5.1,lgpl 6.1,lgpl 7.1,gpl-shared,lgpl-shared,gpl-shared 5.1,gpl-shared 6.1,gpl-shared 7.1,lgpl-shared 5.1,lgpl-shared 6.1,lgpl-shared 7.1,nonfree,nonfree-shared,nonfree 5.1,nonfree 6.1,nonfree 7.1,nonfree-shared 5.1,nonfree-shared 6.1,nonfree-shared 7.1]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc && df -h
@@ -231,7 +231,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 5.1,gpl 6.1,gpl 7.1,lgpl 5.1,lgpl 6.1,lgpl 7.1,gpl-shared,lgpl-shared,gpl-shared 5.1,gpl-shared 6.1,gpl-shared 7.1,lgpl-shared 5.1,lgpl-shared 6.1,lgpl-shared 7.1]
+        variant: [gpl,lgpl,gpl 5.1,gpl 6.1,gpl 7.1,lgpl 5.1,lgpl 6.1,lgpl 7.1,gpl-shared,lgpl-shared,gpl-shared 5.1,gpl-shared 6.1,gpl-shared 7.1,lgpl-shared 5.1,lgpl-shared 6.1,lgpl-shared 7.1,nonfree,nonfree-shared,nonfree 5.1,nonfree 6.1,nonfree 7.1,nonfree-shared 5.1,nonfree-shared 6.1,nonfree-shared 7.1]
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc && df -h
