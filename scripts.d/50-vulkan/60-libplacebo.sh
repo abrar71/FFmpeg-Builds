@@ -1,19 +1,16 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://code.videolan.org/videolan/libplacebo.git"
-SCRIPT_COMMIT="5788a82f459f617a999c4d56278d54d0edfc7b81"
+SCRIPT_COMMIT="563ea4a1a23237c0acd9f0ba29f5166ebcd5cf60"
 
 ffbuild_enabled() {
-    [[ $ADDINS_STR == *4.4* ]] && return -1
-    [[ $ADDINS_STR == *5.0* ]] && return -1
-    [[ $ADDINS_STR == *5.1* ]] && return -1
-    [[ $ADDINS_STR == *6.0* ]] && return -1
+    (( $(ffbuild_ffver) > 600 )) || return -1
     return 0
 }
 
 ffbuild_dockerdl() {
     default_dl .
-    echo "git submodule update --init --recursive"
+    echo "git submodule update --init --recursive --depth=1 --filter=blob:none"
 }
 
 ffbuild_dockerbuild() {
