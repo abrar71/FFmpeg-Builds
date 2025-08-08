@@ -1,12 +1,10 @@
 #!/bin/bash
 
 SCRIPT_REPO="https://github.com/kcat/openal-soft.git"
-SCRIPT_COMMIT="9d8e0d45dfc86a5f518bacc7ffa66d98c6bea9ea"
+SCRIPT_COMMIT="f15e855145be2a6f82a73bf5ba1d94456668011c"
 
 ffbuild_enabled() {
-    [[ $ADDINS_STR == *4.4* ]] && return -1
-    [[ $ADDINS_STR == *5.0* ]] && return -1
-    [[ $ADDINS_STR == *5.1* ]] && return -1
+    (( $(ffbuild_ffver) > 501 )) || return -1
     return 0
 }
 
