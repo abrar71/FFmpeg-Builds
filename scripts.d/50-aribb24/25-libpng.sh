@@ -3,6 +3,11 @@
 SCRIPT_REPO="https://github.com/glennrp/libpng.git"
 SCRIPT_COMMIT="134ab615b617f548e822d8857f1cfc0525aefeba"
 
+ffbuild_depends() {
+    echo base
+    echo zlib
+}
+
 ffbuild_enabled() {
     return 0
 }
@@ -28,5 +33,5 @@ ffbuild_dockerbuild() {
 
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 }

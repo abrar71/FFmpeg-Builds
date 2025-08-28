@@ -3,6 +3,12 @@
 SCRIPT_REPO="https://github.com/breakfastquay/rubberband.git"
 SCRIPT_COMMIT="e4296ac80b1170018a110bc326fd0d45a0eb27d6"
 
+ffbuild_depends() {
+    echo base
+    echo fftw3
+    echo libsamplerate
+}
+
 ffbuild_enabled() {
     [[ $VARIANT == lgpl* ]] && return -1
     return 0
@@ -27,9 +33,9 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
-    meson "${myconf[@]}" ..
+    meson setup "${myconf[@]}" ..
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 }
 
 ffbuild_configure() {

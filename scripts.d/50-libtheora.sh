@@ -3,6 +3,11 @@
 SCRIPT_REPO="https://github.com/xiph/theora.git"
 SCRIPT_COMMIT="23161c4a63fd9f9d09b9e972f95def2d56c777af"
 
+ffbuild_depends() {
+    echo base
+    echo libogg
+}
+
 ffbuild_enabled() {
     return 0
 }
@@ -31,9 +36,15 @@ ffbuild_dockerbuild() {
         return -1
     fi
 
+    if [[ $TARGET == win64 ]]; then
+        myconf+=(
+            --disable-asm
+        )
+    fi
+
     ./configure "${myconf[@]}"
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

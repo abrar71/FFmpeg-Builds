@@ -70,6 +70,10 @@ ffbuild_ffver() {
 }
 
 
+ffbuild_depends() {
+    echo base
+}
+
 ffbuild_dockerstage() {
     if [[ -n "$SELFCACHE" ]]; then
         to_df "RUN --mount=src=${SELF},dst=/stage.sh --mount=src=${SELFCACHE},dst=/cache.tar.xz run_stage /stage.sh"
@@ -79,7 +83,7 @@ ffbuild_dockerstage() {
 }
 
 ffbuild_dockerlayer() {
-    to_df "COPY --link --from=${SELFLAYER} \$FFBUILD_PREFIX/. \$FFBUILD_PREFIX"
+    to_df "COPY --link --from=${SELFLAYER} \$FFBUILD_DESTPREFIX/. \$FFBUILD_PREFIX"
 }
 
 ffbuild_dockerfinal() {

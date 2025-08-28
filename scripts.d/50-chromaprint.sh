@@ -3,6 +3,11 @@
 SCRIPT_REPO="https://github.com/acoustid/chromaprint.git"
 SCRIPT_COMMIT="ac31acc8431defbb134ec54eb11daf9146c74170"
 
+ffbuild_depends() {
+    echo base
+    echo fftw3
+}
+
 ffbuild_enabled() {
     # pkg-config check is currently only available in master
     [[ $ADDINS_STR == *4.4* ]] && return -1
@@ -16,10 +21,10 @@ ffbuild_dockerbuild() {
 
     cmake -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" -DBUILD_SHARED_LIBS=OFF -DBUILD_TOOLS=OFF -DBUILD_TESTS=OFF -DFFT_LIB=fftw3 ..
     make -j$(nproc)
-    make install
+    make install DESTDIR="$FFBUILD_DESTDIR"
 
-    echo "Libs.private: -lfftw3 -lstdc++" >> "$FFBUILD_PREFIX"/lib/pkgconfig/libchromaprint.pc
-    echo "Cflags.private: -DCHROMAPRINT_NODLL" >> "$FFBUILD_PREFIX"/lib/pkgconfig/libchromaprint.pc
+    echo "Libs.private: -lfftw3 -lstdc++" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libchromaprint.pc
+    echo "Cflags.private: -DCHROMAPRINT_NODLL" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/libchromaprint.pc
 }
 
 ffbuild_configure() {

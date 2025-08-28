@@ -4,6 +4,11 @@ SCRIPT_REPO="https://github.com/openssl/openssl.git"
 SCRIPT_COMMIT="openssl-3.2.5"
 SCRIPT_TAGFILTER="openssl-3.2.*"
 
+ffbuild_depends() {
+    echo base
+    echo zlib
+}
+
 ffbuild_enabled() {
     return 0
 }
@@ -89,7 +94,7 @@ EOF
     sed -i -e "/^CFLAGS=/s|=.*|=${CFLAGS}|" -e "/^LDFLAGS=/s|=[[:space:]]*$|=${LDFLAGS}|" Makefile
 
     make -j$(nproc) build_sw
-    make install_sw
+    make install_sw DESTDIR="$FFBUILD_DESTDIR"
 }
 
 ffbuild_configure() {

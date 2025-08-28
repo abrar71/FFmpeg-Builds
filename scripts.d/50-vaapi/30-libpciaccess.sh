@@ -3,6 +3,11 @@
 SCRIPT_REPO="https://gitlab.freedesktop.org/xorg/lib/libpciaccess.git"
 SCRIPT_COMMIT="191dfe0707e2a93c08e4b3e99454b6146c5bfca2"
 
+ffbuild_depends() {
+    echo base
+    echo zlib
+}
+
 ffbuild_enabled() {
     [[ $TARGET != linux* ]] && return -1
     return 0
@@ -32,10 +37,10 @@ ffbuild_dockerbuild() {
 
     meson setup "${myconf[@]}" ..
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
-    gen-implib "$FFBUILD_PREFIX"/lib/{libpciaccess.so.0,libpciaccess.a}
-    rm "$FFBUILD_PREFIX"/lib/libpciaccess.so*
+    gen-implib "$FFBUILD_DESTPREFIX"/lib/{libpciaccess.so.0,libpciaccess.a}
+    rm "$FFBUILD_DESTPREFIX"/lib/libpciaccess.so*
 
-    echo "Libs: -ldl" >> "$FFBUILD_PREFIX"/lib/pkgconfig/pciaccess.pc
+    echo "Libs: -ldl" >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/pciaccess.pc
 }

@@ -4,6 +4,14 @@ SCRIPT_REPO="https://github.com/libsdl-org/SDL.git"
 SCRIPT_COMMIT="272b0733237555c749bc6dd82a8dd0211ab2e22d"
 SCRIPT_BRANCH="SDL2"
 
+ffbuild_depends() {
+    echo base
+    echo libiconv
+    echo x11
+    echo pulseaudio
+    echo libsamplerate
+}
+
 ffbuild_enabled() {
     return 0
 }
@@ -16,6 +24,10 @@ ffbuild_dockerbuild() {
         -DSDL_STATIC=ON
         -DSDL_STATIC_PIC=ON
         -DSDL_TEST=OFF
+        -DSDL_CCACHE=OFF
+
+        -DSDL_LIBSAMPLERATE=ON
+        -DSDL_LIBSAMPLERATE_SHARED=OFF
     )
 
     if [[ $TARGET == linux* ]]; then
@@ -33,26 +45,26 @@ ffbuild_dockerbuild() {
     cmake -GNinja -DCMAKE_TOOLCHAIN_FILE="$FFBUILD_CMAKE_TOOLCHAIN" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$FFBUILD_PREFIX" "${mycmake[@]}" ..
 
     ninja -j$(nproc)
-    ninja install
+    DESTDIR="$FFBUILD_DESTDIR" ninja install
 
     if [[ $TARGET == linux* ]]; then
         sed -ri -e 's/\-Wl,\-\-no\-undefined.*//' \
             -e 's/ \-l\/.+?\.a//g' \
-            "$FFBUILD_PREFIX"/lib/pkgconfig/sdl2.pc
-        echo 'Requires: libpulse-simple xxf86vm xscrnsaver xrandr xfixes xi xinerama xcursor' >> "$FFBUILD_PREFIX"/lib/pkgconfig/sdl2.pc
+            "$FFBUILD_DESTPREFIX"/lib/pkgconfig/sdl2.pc
+        echo 'Requires: libpulse-simple xxf86vm xscrnsaver xrandr xfixes xi xinerama xcursor' >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/sdl2.pc
     elif [[ $TARGET == win* ]]; then
         sed -ri -e 's/\-Wl,\-\-no\-undefined.*//' \
             -e 's/ \-mwindows//g' \
             -e 's/ \-lSDL2main//g' \
             -e 's/ \-Dmain=SDL_main//g' \
-            "$FFBUILD_PREFIX"/lib/pkgconfig/sdl2.pc
+            "$FFBUILD_DESTPREFIX"/lib/pkgconfig/sdl2.pc
     fi
 
     sed -ri -e 's/ -lSDL2//g' \
         -e 's/Libs: /Libs: -lSDL2 /'\
-        "$FFBUILD_PREFIX"/lib/pkgconfig/sdl2.pc
+        "$FFBUILD_DESTPREFIX"/lib/pkgconfig/sdl2.pc
 
-    echo 'Requires: samplerate' >> "$FFBUILD_PREFIX"/lib/pkgconfig/sdl2.pc
+    echo 'Requires: samplerate' >> "$FFBUILD_DESTPREFIX"/lib/pkgconfig/sdl2.pc
 }
 
 ffbuild_configure() {
