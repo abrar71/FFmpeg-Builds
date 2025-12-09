@@ -58,6 +58,8 @@ while [[ $# -gt 0 ]]; do
             tar cvJf "$RELEASE_DIR/$ONAME.tar.xz" "$ONAME"
         fi
 
+        rm -f "$INPUT"
+
         rm -rf "$REPACK_DIR"
     ) &
 
