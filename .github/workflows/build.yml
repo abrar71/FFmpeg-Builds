@@ -355,22 +355,14 @@ jobs:
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: ffmpeg-*
-          merge-multiple: true
-          path: artifacts
       - name: Create release
         id: create_release
         run: |
           set -xe
-          shopt -s nullglob
           RELDATE="$(date +'%Y-%m-%d %H:%M')"
           NAME="Auto-Build $RELDATE"
           TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')"
-          (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
-          gh release create "$TAGNAME" --target "master" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          gh release create "$TAGNAME" --target "master" --title "$NAME" --draft
           echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
           echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
@@ -384,13 +376,49 @@ jobs:
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 15
           gh release create "$TAGNAME" --target "master" --title "$NAME" --draft
-          mkdir -p latest_artifacts
-          ./util/repack_latest.sh --upload-release "$TAGNAME" --checksum-file latest_artifacts/checksums.sha256 latest_artifacts artifacts/*.{zip,tar.xz}
+          AUTOBUILD_TAG="${{ steps.create_release.outputs.tag_name }}"
+          AUTO_NAME="Auto-Build ${{ steps.create_release.outputs.rel_date }}"
+          AUTOBUILD_CHECKSUM="autobuild_checksums.sha256"
+          LATEST_CHECKSUM="latest_artifacts/checksums.sha256"
+          mkdir -p latest_artifacts wiki_inputs
+          : > "$AUTOBUILD_CHECKSUM"
+          : > "$LATEST_CHECKSUM"
+          gh api --paginate -q '.artifacts[].id' "/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" > artifact_ids.txt
+
+          while IFS= read -r ART_ID; do
+            TMPDIR="$(mktemp -d)"
+            gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ART_ID}/zip" > "$TMPDIR/artifact.zip"
+            unzip -q "$TMPDIR/artifact.zip" -d "$TMPDIR/extracted"
+
+            for txt in "$TMPDIR"/extracted/*.txt; do
+              cp "$txt" wiki_inputs/
+            done
+
+            FILES=( "$TMPDIR"/extracted/*.{zip,tar.xz} )
+            if [[ ${#FILES[@]} -eq 0 ]]; then
+              echo "No packaged outputs found in artifact ${ART_ID}" >&2
+            fi
+
+            for f in "${FILES[@]}"; do
+              sha256sum "$f" >> "$AUTOBUILD_CHECKSUM"
+              gh release upload "$AUTOBUILD_TAG" "$f" --clobber
+            done
+
+            if [[ ${#FILES[@]} -gt 0 ]]; then
+              ./util/repack_latest.sh --upload-release "$TAGNAME" --checksum-file "$LATEST_CHECKSUM" --append-checksum --no-upload-checksum latest_artifacts "${FILES[@]}"
+            fi
+
+            rm -rf "$TMPDIR"
+          done < artifact_ids.txt
+
+          gh release upload "$AUTOBUILD_TAG" "$AUTOBUILD_CHECKSUM" --clobber
+          gh release upload "$TAGNAME" "$LATEST_CHECKSUM" --clobber
+          gh release edit "$AUTOBUILD_TAG" --draft=false --title "$AUTO_NAME"
           gh release edit "$TAGNAME" --draft=false --title "$NAME"
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
-        run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
+        run: ./util/update_wiki.sh wiki_inputs ${{ steps.create_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Prune old releases

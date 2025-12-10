@@ -3,6 +3,8 @@ set -euo pipefail
 
 UPLOAD_RELEASE=""
 CHECKSUM_FILE=""
+APPEND_CHECKSUM=0
+UPLOAD_CHECKSUM=1
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -21,6 +23,14 @@ while [[ $# -gt 0 ]]; do
             fi
             CHECKSUM_FILE="$2"
             shift 2
+            ;;
+        --append-checksum)
+            APPEND_CHECKSUM=1
+            shift
+            ;;
+        --no-upload-checksum)
+            UPLOAD_CHECKSUM=0
+            shift
             ;;
         --)
             shift
@@ -51,7 +61,11 @@ if [[ -n "$CHECKSUM_FILE" ]]; then
     CHECKSUM_DIR="$(dirname "$CHECKSUM_FILE")"
     mkdir -p "$CHECKSUM_DIR"
     CHECKSUM_FILE="$(cd "$CHECKSUM_DIR" && pwd)/$(basename "$CHECKSUM_FILE")"
-    : > "$CHECKSUM_FILE"
+    if [[ $APPEND_CHECKSUM -eq 0 ]]; then
+        : > "$CHECKSUM_FILE"
+    elif [[ ! -f "$CHECKSUM_FILE" ]]; then
+        : > "$CHECKSUM_FILE"
+    fi
     CHECKSUM_LOCK="${CHECKSUM_FILE}.lock"
 fi
 
@@ -129,7 +143,7 @@ while [[ $(jobs | wc -l) -gt 0 ]]; do
     wait %1
 done
 
-if [[ -n "$UPLOAD_RELEASE" && -n "$CHECKSUM_FILE" ]]; then
+if [[ -n "$UPLOAD_RELEASE" && -n "$CHECKSUM_FILE" && $UPLOAD_CHECKSUM -ne 0 ]]; then
     gh release upload "$UPLOAD_RELEASE" "$CHECKSUM_FILE" --clobber
 fi
 
