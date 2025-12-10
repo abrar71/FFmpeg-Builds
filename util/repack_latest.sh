@@ -1,14 +1,59 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+UPLOAD_RELEASE=""
+CHECKSUM_FILE=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --upload-release)
+            if [[ $# -lt 2 ]]; then
+                echo "Missing value for --upload-release"
+                exit 1
+            fi
+            UPLOAD_RELEASE="$2"
+            shift 2
+            ;;
+        --checksum-file)
+            if [[ $# -lt 2 ]]; then
+                echo "Missing value for --checksum-file"
+                exit 1
+            fi
+            CHECKSUM_FILE="$2"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 if [[ $# -lt 2 ]]; then
-    echo "Missing arguments"
-    exit -1
+    echo "Usage: $0 [--upload-release TAG] [--checksum-file FILE] <output_dir> <input1> [input2 ...]"
+    exit 1
 fi
 
-RELEASE_DIR="$(realpath "$1")"
+RELEASE_DIR="$1"
 shift
 mkdir -p "$RELEASE_DIR"
+RELEASE_DIR="$(cd "$RELEASE_DIR" && pwd)"
+
+if [[ -n "$UPLOAD_RELEASE" && -z "$CHECKSUM_FILE" ]]; then
+    CHECKSUM_FILE="$RELEASE_DIR/checksums.sha256"
+fi
+
+CHECKSUM_LOCK=""
+if [[ -n "$CHECKSUM_FILE" ]]; then
+    CHECKSUM_DIR="$(dirname "$CHECKSUM_FILE")"
+    mkdir -p "$CHECKSUM_DIR"
+    CHECKSUM_FILE="$(cd "$CHECKSUM_DIR" && pwd)/$(basename "$CHECKSUM_FILE")"
+    : > "$CHECKSUM_FILE"
+    CHECKSUM_LOCK="${CHECKSUM_FILE}.lock"
+fi
 
 rm -rf repack_dir
 mkdir repack_dir
@@ -19,7 +64,7 @@ while [[ $# -gt 0 ]]; do
     shift
 
     (
-        set -e
+        set -euo pipefail
         REPACK_DIR="repack_dir/$BASHPID"
         rm -rf "$REPACK_DIR"
         mkdir "$REPACK_DIR"
@@ -52,10 +97,24 @@ while [[ $# -gt 0 ]]; do
 
         mv "$INAME" "$ONAME"
 
+        OUTPUT_PATH=""
         if [[ $INPUT == *.zip ]]; then
-            zip -9 -r "$RELEASE_DIR/$ONAME.zip" "$ONAME"
+            OUTPUT_PATH="$RELEASE_DIR/$ONAME.zip"
+            zip -9 -r "$OUTPUT_PATH" "$ONAME"
         elif [[ $INPUT == *.tar.xz ]]; then
-            tar cvJf "$RELEASE_DIR/$ONAME.tar.xz" "$ONAME"
+            OUTPUT_PATH="$RELEASE_DIR/$ONAME.tar.xz"
+            tar cvJf "$OUTPUT_PATH" "$ONAME"
+        fi
+
+        if [[ -n "$UPLOAD_RELEASE" ]]; then
+            if [[ -n "$CHECKSUM_FILE" ]]; then
+                (
+                    flock -x 200
+                    sha256sum "$OUTPUT_PATH" >> "$CHECKSUM_FILE"
+                ) 200>"$CHECKSUM_LOCK"
+            fi
+            gh release upload "$UPLOAD_RELEASE" "$OUTPUT_PATH" --clobber
+            rm -f "$OUTPUT_PATH"
         fi
 
         rm -rf "$REPACK_DIR"
@@ -69,4 +128,9 @@ done
 while [[ $(jobs | wc -l) -gt 0 ]]; do
     wait %1
 done
+
+if [[ -n "$UPLOAD_RELEASE" && -n "$CHECKSUM_FILE" ]]; then
+    gh release upload "$UPLOAD_RELEASE" "$CHECKSUM_FILE" --clobber
+fi
+
 rm -rf repack_dir

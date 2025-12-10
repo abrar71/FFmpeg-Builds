@@ -379,14 +379,14 @@ jobs:
         run: |
           set -xe
           shopt -s nullglob
-          mkdir latest_artifacts
-          ./util/repack_latest.sh latest_artifacts artifacts/*.{zip,tar.xz}
-          (cd latest_artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
-          NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
           TAGNAME="latest"
+          NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
           gh release delete --cleanup-tag --yes "$TAGNAME" || true
           sleep 15
-          gh release create "$TAGNAME" --target "master" --title "$NAME" latest_artifacts/*
+          gh release create "$TAGNAME" --target "master" --title "$NAME" --draft
+          mkdir -p latest_artifacts
+          ./util/repack_latest.sh --upload-release "$TAGNAME" --checksum-file latest_artifacts/checksums.sha256 latest_artifacts artifacts/*.{zip,tar.xz}
+          gh release edit "$TAGNAME" --draft=false --title "$NAME"
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
