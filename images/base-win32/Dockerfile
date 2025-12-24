@@ -19,6 +19,13 @@ RUN \
         -delete && \
     mkdir /opt/ffbuild
 
+RUN \
+    dpkg --add-architecture i386 && \
+    apt-get -y update && \
+    apt-get -y install --no-install-recommends wine32 wine-stable && \
+    apt-get -y clean autoclean && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV FFBUILD_TOOLCHAIN=i686-w64-mingw32 \
     FFBUILD_RUST_TARGET=i686-pc-windows-gnu
 
