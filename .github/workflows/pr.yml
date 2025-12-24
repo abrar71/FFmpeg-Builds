@@ -4,8 +4,8 @@ on:
     branches:
       - master
     paths-ignore:
-      - "**.md"
-      - "LICENSE"
+      - '**.md'
+      - 'LICENSE'
 
 env:
   DOCKER_BUILDKIT: 1
@@ -47,13 +47,13 @@ jobs:
         include:
           - target: win64
             variant: gpl
-            quickbuild: ""
+            quickbuild: ''
           - target: linux64
             variant: gpl
-            quickbuild: ""
+            quickbuild: ''
           - target: linuxarm64
             variant: gpl
-            quickbuild: ""
+            quickbuild: ''
     steps:
       - name: Free Disk-Space
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h

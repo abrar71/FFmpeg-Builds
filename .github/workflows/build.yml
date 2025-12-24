@@ -3,22 +3,22 @@ name: Build FFmpeg
 on:
   push:
     paths-ignore:
-      - "**.md"
-      - "LICENSE"
+      - '**.md'
+      - 'LICENSE'
   workflow_dispatch:
     inputs:
       doRelease:
-        description: "Publish new release"
+        description: 'Publish new release'
         type: boolean
         default: true
         required: false
       buildOnly:
-        description: "Only build ffmpeg"
+        description: 'Only build ffmpeg'
         type: boolean
         default: false
         required: false
   schedule:
-    - cron: "0 10 * * *"
+    - cron: '0 10 * * *'
 
 env:
   DOCKER_BUILDKIT: 1
@@ -352,14 +352,42 @@ jobs:
         run: df -h && sudo apt-get clean && docker system prune -a -f && sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/local/lib/android && df -h
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Publish releases incrementally
-        id: publish_release
-        run: bash ./util/publish_releases_streaming.sh
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ffmpeg-*
+          merge-multiple: true
+          path: artifacts
+      - name: Create release
+        id: create_release
+        run: |
+          set -xe
+          shopt -s nullglob
+          RELDATE="$(date +'%Y-%m-%d %H:%M')"
+          NAME="Auto-Build $RELDATE"
+          TAGNAME="autobuild-$(date +'%Y-%m-%d-%H-%M')"
+          (cd artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
+          gh release create "$TAGNAME" --target "master" --title "$NAME" artifacts/*.{zip,tar.xz} artifacts/checksums.*
+          echo "tag_name=${TAGNAME}" >> $GITHUB_OUTPUT
+          echo "rel_date=${RELDATE}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          GH_TOKEN: ${{ github.token }}
+      - name: Update Latest
+        run: |
+          set -xe
+          shopt -s nullglob
+          mkdir latest_artifacts
+          ./util/repack_latest.sh latest_artifacts artifacts/*.{zip,tar.xz}
+          (cd latest_artifacts && sha256sum *.{zip,tar.xz} > checksums.sha256)
+          NAME="Latest Auto-Build (${{ steps.create_release.outputs.rel_date }})"
+          TAGNAME="latest"
+          gh release delete --cleanup-tag --yes "$TAGNAME" || true
+          sleep 15
+          gh release create "$TAGNAME" --target "master" --title "$NAME" latest_artifacts/*
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Update Wiki
-        run: ./util/update_wiki.sh artifacts ${{ steps.publish_release.outputs.tag_name }}
+        run: ./util/update_wiki.sh artifacts ${{ steps.create_release.outputs.tag_name }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Prune old releases
