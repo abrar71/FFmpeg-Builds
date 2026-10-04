@@ -1,17 +1,20 @@
 # FFmpeg Static Auto-Builds
 
-Static Windows (x86_64) and Linux (x86_64) Builds of ffmpeg master and latest release branch.
+FFmpeg builds for Windows (x86_64 and arm64) and Linux (x86_64, aarch64, and RISC-V64).
 
 Windows builds are targetting Windows 7 and newer, provided UCRT is installed.
 The minimum supported version is Windows 10 22H2, no guarantees on anything older.
 
-Linux builds are targetting RHEL/CentOS 8 (glibc-2.28 + linux-4.18) and anything more recent.
+Linux x86_64 and aarch64 builds are targetting RHEL/CentOS 8 (glibc-2.28 + linux-4.18) and anything more recent.
+RISC-V64 builds target rv64gc/lp64d and require glibc 2.36 and Linux 6.1.183 or newer.
 
 ## Auto-Builds
 
-Builds run daily at 12:00 UTC (or GitHubs idea of that time) and are automatically released on success.
+Builds run daily at 10:00 UTC (or GitHubs idea of that time) and are automatically released on success.
 
-**Auto-Builds run ONLY for win(arm)64 and linux(arm)64. There are no win32/x86 auto-builds, though you can produce win32 builds yourself following the instructions below.**
+**Auto-Builds run for win64, winarm64, linux64, linuxarm64, and linuxriscv64. There are no win32/x86 auto-builds, though you can produce win32 builds yourself following the instructions below.**
+
+Releases include FFmpeg master, 9.0, 8.1, and 4.4 in all six GPL, LGPL, and nonfree variants listed below.
 
 ### Release Retention Policy
 
@@ -48,6 +51,7 @@ Available targets:
 * `win32` (x86 Windows)
 * `linux64` (x86_64 Linux, glibc>=2.28, linux>=4.18)
 * `linuxarm64` (arm64 (aarch64) Linux, glibc>=2.28, linux>=4.18)
+* `linuxriscv64` (RISC-V64 Linux, rv64gc/lp64d, glibc>=2.36, linux>=6.1.183)
 
 The linuxarm64 target will not build some dependencies due to lack of arm64 (aarch64) architecture support or cross-compiling restrictions.
 
