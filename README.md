@@ -6,7 +6,7 @@ Windows builds are targetting Windows 7 and newer, provided UCRT is installed.
 The minimum supported version is Windows 10 22H2, no guarantees on anything older.
 
 Linux x86_64 and aarch64 builds are targetting RHEL/CentOS 8 (glibc-2.28 + linux-4.18) and anything more recent.
-RISC-V64 builds target rv64gc/lp64d and require glibc 2.36 and Linux 6.1.183 or newer.
+RISC-V64 builds target rv64gc/lp64d and require glibc 2.36 and Linux 6.1.189 or newer.
 
 ## Auto-Builds
 
@@ -51,7 +51,7 @@ Available targets:
 * `win32` (x86 Windows)
 * `linux64` (x86_64 Linux, glibc>=2.28, linux>=4.18)
 * `linuxarm64` (arm64 (aarch64) Linux, glibc>=2.28, linux>=4.18)
-* `linuxriscv64` (RISC-V64 Linux, rv64gc/lp64d, glibc>=2.36, linux>=6.1.183)
+* `linuxriscv64` (RISC-V64 Linux, rv64gc/lp64d, glibc>=2.36, linux>=6.1.189)
 
 The linuxarm64 target will not build some dependencies due to lack of arm64 (aarch64) architecture support or cross-compiling restrictions.
 
