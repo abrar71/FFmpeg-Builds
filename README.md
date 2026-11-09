@@ -16,6 +16,8 @@ Builds run daily at 10:00 UTC (or GitHubs idea of that time) and are automatical
 
 Releases include FFmpeg master, 9.0, 8.1, and 4.4 in all six GPL, LGPL, and nonfree variants listed below.
 
+Upstream changes are proposed through review PRs; see [upstream synchronization](docs/upstream-sync.md) for setup and review instructions.
+
 ### Release Retention Policy
 
 - The last build of each month is kept for two years.

@@ -1,0 +1,32 @@
+name: Test upstream sync
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/upstream-sync*.yml'
+      - '.github/workflows/build.yml'
+  push:
+    branches: [master]
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/upstream-sync*.yml'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install YAML parser
+        run: python3 -m pip install --disable-pip-version-check PyYAML==6.0.3
+      - name: Test synchronization and release safeguards
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
