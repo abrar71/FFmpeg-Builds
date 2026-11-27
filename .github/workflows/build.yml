@@ -300,8 +300,11 @@ jobs:
       matrix:
         runner: [ubuntu-latest]
         target: [win64,winarm64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 8.1,gpl 9.0,lgpl 8.1,lgpl 9.0,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.0,lgpl-shared 8.1,lgpl-shared 9.0]
+        variant: [gpl,lgpl,gpl 8.1,gpl 9.1,lgpl 8.1,lgpl 9.1,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.1,lgpl-shared 8.1,lgpl-shared 9.1]
         include:
+          - runner: ubuntu-latest
+            target: win64
+            variant: gpl 9.0
           - runner: ubuntu-latest
             target: win64
             variant: gpl 8.0
@@ -435,7 +438,7 @@ jobs:
       fail-fast: false
       matrix:
         target: [win64,winarm64,linux64,linuxarm64]
-        variant: [gpl,lgpl,gpl 8.1,gpl 9.0,lgpl 8.1,lgpl 9.0,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.0,lgpl-shared 8.1,lgpl-shared 9.0]
+        variant: [gpl,lgpl,gpl 8.1,gpl 9.1,lgpl 8.1,lgpl 9.1,gpl-shared,lgpl-shared,gpl-shared 8.1,gpl-shared 9.1,lgpl-shared 8.1,lgpl-shared 9.1]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
